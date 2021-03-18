@@ -25,7 +25,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 function Header(props) {
-    const { classes, openCart } = props;
+    const { classes, openCart, titleName } = props;
 
     return (
       <div>
@@ -36,16 +36,16 @@ function Header(props) {
             <MenuIcon />
           </IconButton>
           <Typography variant="h6" className={classes.title}>
-            E-Commerce
+            {titleName}
           </Typography>
-          <IconButton style={{marginLeft: "10%"}} edge="start" onClick={(()=>openCart())} className={classes.menuButton} color="inherit" aria-label="menu">
+          {titleName == "E-Commerce" && <IconButton style={{marginLeft: "80%"}} edge="start" onClick={(()=>openCart())} className={classes.menuButton} color="inherit" aria-label="menu">
             <AddShoppingCartIcon />
-          </IconButton>
+          </IconButton>}
         </Toolbar>
       </AppBar>
     </div>
       </div>
     );
-  }
+}
 
   export default withStyles(useStyles)(Header);

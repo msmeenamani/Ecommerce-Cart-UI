@@ -44,7 +44,6 @@ class HomeComponent extends Component {
 
   async componentDidMount() {
     this.getAllItems()
-    console.log("inside the getData", this.state.data);
   }
 
   getAllItems=async ()=>{
@@ -55,7 +54,6 @@ class HomeComponent extends Component {
     let cartItemsRes = getAllCart?.data[0]?.items;
 
     let cartItem = []
-    // console.log("getAllCart ---->", cartItemsRes)
     if(cartItemsRes?.length > 0){
       cartItemsRes.map(e => {
         cartItem.push({"itemId": e.itemId, "quantity": e.quantity})
@@ -69,27 +67,33 @@ class HomeComponent extends Component {
   }
 
   addToCart =async (item, key, identifier) => {
-    console.log("i am here -->", this.state.cartData)
-    console.log("11111 -->", item + " "+ key)
 
     let { cartData } = this.state
     let data = [...cartData]
     if(identifier == "inc"){
-
+      data.forEach(e => {
+        if(e.itemId == item._id){
+          e.quantity = e.quantity + 1
+        }
+      })
     }else if(identifier == "dec"){
-
-    }else{
-
+      data.forEach(e => {
+        if(e.itemId == item._id){
+          e.quantity = e.quantity - 1
+        }
+      })
+    }else if(identifier == "init"){
+      data.push({"itemId": item._id, "quantity": 1})
     }
-    // var updateCartPath = "ecom/cart"
-    // var updateCartData = await put(updateCartPath, null, {"items": data});
+    var updateCartPath = "ecom/cart"
+    var updateCartData = await put(updateCartPath, null, {"items": data});
+    this.getAllItems()
   }
 
   tableBody=(data)=> {
     return (
       <TableBody>
-        {data &&
-          data.data && data.data.map((row, key) => (
+        {data && data.data && data.data.map((row, key) => (
             <TableRow key={row.name}>
               <TableCell component="th" scope="row">
                 {row.name}
@@ -108,13 +112,15 @@ class HomeComponent extends Component {
                 </TableCell>    
               <TableCell align="right">
                 {" "}
-                {row.quantity > 0 ? "Added to cart":
+                {row.quantity > 0 ? <Button disabled variant="contained">
+                  Added to Cart
+                </Button>:
                  <Button onClick={()=>this.addToCart(row, key, "init")} variant="contained" color="primary">
                   Add to Cart
                 </Button>}
               </TableCell>
             </TableRow>
-          ))}
+        ))}
       </TableBody>
     )
   }
@@ -124,26 +130,24 @@ class HomeComponent extends Component {
     const { classes } = this.props;
 
     return (
-      <header>
-        <div>
-        <div className={classes.root}>
-      <Header openCart={()=>this.openCart()} {...this.props}/>
-      </div>
+      <div>
+        <Header titleName={"E-Commerce"} openCart={()=>this.openCart()} {...this.props}/>
+        <div style={{overflow: "auto", height: "30rem"}}>
           <TableContainer component={Paper}>
-            <Table className={classes.table} aria-label="simple table">
-              <TableHead>
-                <TableRow>
-                  <TableCell>Product Name</TableCell>
-                  <TableCell align="right">Price</TableCell>
-                  <TableCell align="right">Quantity</TableCell>
-                  <TableCell align="right"></TableCell>
-                </TableRow>
-              </TableHead>
-              {this.tableBody(data)}
-            </Table>
-          </TableContainer>
+              <Table className={classes.table} aria-label="simple table">
+                <TableHead>
+                  <TableRow>
+                    <TableCell>Product Name</TableCell>
+                    <TableCell align="right">Price</TableCell>
+                    <TableCell align="right">Quantity</TableCell>
+                    <TableCell align="right"></TableCell>
+                  </TableRow>
+                </TableHead>
+                {this.tableBody(data)}
+              </Table>
+            </TableContainer>
         </div>
-      </header>
+      </div>
     );
   }
 }

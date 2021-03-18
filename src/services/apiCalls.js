@@ -25,7 +25,7 @@ export const post = async (path) => {
 }
 
 export const put = (path, id, body) => {
-  return fetch(`${_CONSTANT.url.BASE_URL}${path}/${id}`, {
+  return fetch(id == null ? `${_CONSTANT.url.BASE_URL}${path}` : `${_CONSTANT.url.BASE_URL}${path}/${id}`, {
     method: 'put',
     headers: {
       'Content-Type': 'application/json'
