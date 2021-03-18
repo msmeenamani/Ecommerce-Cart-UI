@@ -7,6 +7,7 @@ import Toolbar from "@material-ui/core/Toolbar";
 import Typography from "@material-ui/core/Typography";
 import IconButton from "@material-ui/core/IconButton";
 import MenuIcon from "@material-ui/icons/Menu";
+import AddShoppingCartIcon from '@material-ui/icons/AddShoppingCart';
 
 const useStyles = makeStyles((theme) => ({
     table: {
@@ -21,10 +22,10 @@ const useStyles = makeStyles((theme) => ({
     title: {
       flexGrow: 1,
     },
-  }));
+}));
 
 function Header(props) {
-    const { classes } = this.props;
+    const { classes, openCart } = props;
 
     return (
       <div>
@@ -37,6 +38,9 @@ function Header(props) {
           <Typography variant="h6" className={classes.title}>
             E-Commerce
           </Typography>
+          <IconButton style={{marginLeft: "10%"}} edge="start" onClick={(()=>openCart())} className={classes.menuButton} color="inherit" aria-label="menu">
+            <AddShoppingCartIcon />
+          </IconButton>
         </Toolbar>
       </AppBar>
     </div>

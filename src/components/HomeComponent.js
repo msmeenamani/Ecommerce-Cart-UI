@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { get } from "../services/apiCalls";
+import { get, put } from "../services/apiCalls";
 import { makeStyles } from "@material-ui/core/styles";
 import { withStyles } from "@material-ui/core/styles";
 
@@ -12,11 +12,10 @@ import TableRow from "@material-ui/core/TableRow";
 import Paper from "@material-ui/core/Paper";
 import Button from "@material-ui/core/Button";
 
-import AppBar from "@material-ui/core/AppBar";
-import Toolbar from "@material-ui/core/Toolbar";
-import Typography from "@material-ui/core/Typography";
 import IconButton from "@material-ui/core/IconButton";
-import MenuIcon from "@material-ui/icons/Menu";
+import Header from '../layouts/HeaderComp'
+import RemoveIcon from '@material-ui/icons/Remove';
+import AddIcon from '@material-ui/icons/Add';
 
 const useStyles = makeStyles((theme) => ({
   table: {
@@ -39,14 +38,85 @@ class HomeComponent extends Component {
 
     this.state = {
       data: "",
+      cartData: []
     };
   }
 
   async componentDidMount() {
-    var path = "ecom/item";
-    var getData = await get(path);
-    this.setState({ data: getData });
+    this.getAllItems()
     console.log("inside the getData", this.state.data);
+  }
+
+  getAllItems=async ()=>{
+    var path = "ecom/item";
+    var getAllCartPath = "ecom/cart";
+    var getData = await get(path);
+    var getAllCart = await get(getAllCartPath);
+    let cartItemsRes = getAllCart?.data[0]?.items;
+
+    let cartItem = []
+    // console.log("getAllCart ---->", cartItemsRes)
+    if(cartItemsRes?.length > 0){
+      cartItemsRes.map(e => {
+        cartItem.push({"itemId": e.itemId, "quantity": e.quantity})
+      })
+    }
+    this.setState({ data: getData, cartData: cartItem });
+  }
+
+  openCart = () => {
+    this.props.history.push('/cart')
+  }
+
+  addToCart =async (item, key, identifier) => {
+    console.log("i am here -->", this.state.cartData)
+    console.log("11111 -->", item + " "+ key)
+
+    let { cartData } = this.state
+    let data = [...cartData]
+    if(identifier == "inc"){
+
+    }else if(identifier == "dec"){
+
+    }else{
+
+    }
+    // var updateCartPath = "ecom/cart"
+    // var updateCartData = await put(updateCartPath, null, {"items": data});
+  }
+
+  tableBody=(data)=> {
+    return (
+      <TableBody>
+        {data &&
+          data.data && data.data.map((row, key) => (
+            <TableRow key={row.name}>
+              <TableCell component="th" scope="row">
+                {row.name}
+              </TableCell>
+              <TableCell align="right">{row.price}</TableCell>
+              <TableCell align="right">
+                {row.quantity > 0 ? <div>
+                  <IconButton onClick={()=>this.addToCart(row, key, "dec")} edge="start" color="inherit" aria-label="menu">
+                    <RemoveIcon />
+                  </IconButton>
+                    {row.quantity}
+                  <IconButton onClick={()=>this.addToCart(row, key, "inc")} edge="end" color="inherit" aria-label="menu">
+                    <AddIcon />
+                  </IconButton>
+                </div> : 0}
+                </TableCell>    
+              <TableCell align="right">
+                {" "}
+                {row.quantity > 0 ? "Added to cart":
+                 <Button onClick={()=>this.addToCart(row, key, "init")} variant="contained" color="primary">
+                  Add to Cart
+                </Button>}
+              </TableCell>
+            </TableRow>
+          ))}
+      </TableBody>
+    )
   }
 
   render() {
@@ -57,59 +127,21 @@ class HomeComponent extends Component {
       <header>
         <div>
         <div className={classes.root}>
-      <AppBar position="static">
-        <Toolbar>
-          <IconButton edge="start" className={classes.menuButton} color="inherit" aria-label="menu">
-            <MenuIcon />
-          </IconButton>
-          <Typography variant="h6" className={classes.title}>
-            E-Commerce
-          </Typography>
-        </Toolbar>
-      </AppBar>
-    </div>
+      <Header openCart={()=>this.openCart()} {...this.props}/>
+      </div>
           <TableContainer component={Paper}>
             <Table className={classes.table} aria-label="simple table">
               <TableHead>
                 <TableRow>
                   <TableCell>Product Name</TableCell>
                   <TableCell align="right">Price</TableCell>
+                  <TableCell align="right">Quantity</TableCell>
                   <TableCell align="right"></TableCell>
                 </TableRow>
               </TableHead>
-              <TableBody>
-                {data &&
-                  data.data &&
-                  data.data.map((row) => (
-                    <TableRow key={row.name}>
-                      <TableCell component="th" scope="row">
-                        {row.name}
-                      </TableCell>
-                      <TableCell align="right">{row.price}</TableCell>
-                      <TableCell align="right">
-                        {" "}
-                        <Button variant="contained" color="primary">
-                          Add to Cart
-                        </Button>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-              </TableBody>
+              {this.tableBody(data)}
             </Table>
           </TableContainer>
-
-
-   {/* Footer */}
-          <div className={classes.root}>
-      <AppBar position="static">
-        <Toolbar>
-          <IconButton edge="start" className={classes.menuButton} color="inherit" aria-label="menu">
-          </IconButton>
-          <Typography variant="h6" className={classes.title}>
-          </Typography>
-        </Toolbar>
-      </AppBar>
-    </div>
         </div>
       </header>
     );
